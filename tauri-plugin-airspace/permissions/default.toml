@@ -1,0 +1,15 @@
+"$schema" = "schemas/schema.json"
+
+[default]
+description = """
+Allows a window to create and drive its own native host child window
+(hole-punching) and to toggle click-through on overlay windows.
+"""
+permissions = [
+    "allow-create-host",
+    "allow-destroy-host",
+    "allow-set-holes",
+    "allow-clear-holes",
+    "allow-host-handle",
+    "allow-set-click-through",
+]

@@ -1,0 +1,9 @@
+[workspace]
+resolver = "2"
+members = ["tauri-plugin-airspace", "examples/demo/src-tauri"]
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/lukr54/airspace"
+rust-version = "1.77"

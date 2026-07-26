@@ -1,0 +1,33 @@
+[package]
+name = "tauri-plugin-airspace"
+version = "0.1.0"
+description = "Render native content under or alongside HTML in a Tauri v2 window on Windows: window-region hole-punching and click-through overlay windows."
+authors = ["lukr54 <113797777+lukr54@users.noreply.github.com>"]
+keywords = ["tauri", "windows", "webview2", "airspace", "overlay"]
+categories = ["gui", "os::windows-apis"]
+readme = "README.md"
+links = "tauri-plugin-airspace"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
+targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"]
+
+[build-dependencies]
+tauri-plugin = { version = "2", features = ["build"] }
+
+[dependencies]
+tauri = "2"
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_System_LibraryLoader",
+    "Win32_UI_WindowsAndMessaging",
+] }

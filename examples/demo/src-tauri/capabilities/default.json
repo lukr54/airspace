@@ -1,0 +1,6 @@
+{
+  "identifier": "default",
+  "description": "Demo capability.",
+  "windows": ["main", "hud"],
+  "permissions": ["core:default", "airspace:default"]
+}

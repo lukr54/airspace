@@ -1,0 +1,106 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0c0f14;
+  color: #e8eef7;
+  font: 15px/1.5 "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.page { padding: 56px 64px; }
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 64px;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.lede { max-width: 62ch; color: #9fb0c6; margin: 0 0 40px; }
+code { background: #1a2230; padding: 1px 6px; border-radius: 4px; color: #cfe0f5; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  max-width: 900px;
+}
+.grid span {
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  background: linear-gradient(160deg, #1b2432, #131a24);
+  border: 1px solid #222d3d;
+}
+
+/* Overlays. Each one is measured and punched out of the native host. */
+.overlay { position: fixed; z-index: 10; }
+.overlay.off { display: none; }
+
+.title {
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(10, 14, 20, 0.86);
+  border: 1px solid #2a3547;
+  font-size: 13px;
+  backdrop-filter: blur(8px);
+}
+.dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #ff7a29;
+  margin-right: 6px;
+}
+
+.skip {
+  right: 34px;
+  bottom: 148px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 1px solid #3a4759;
+  background: rgba(12, 16, 22, 0.92);
+  color: #e8eef7;
+  font-size: 14px;
+  cursor: pointer;
+}
+.skip:hover { border-color: #ff7a29; }
+
+.bar {
+  left: 24px; right: 24px; bottom: 22px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: rgba(10, 14, 20, 0.92);
+  border: 1px solid #26313f;
+}
+
+.controls { display: flex; gap: 10px; flex-wrap: wrap; }
+
+button {
+  padding: 9px 14px;
+  border-radius: 7px;
+  border: 1px solid #33404f;
+  background: #161d27;
+  color: #dbe6f4;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: #4a5b70; background: #1b2430; }
+button:disabled { opacity: 0.4; cursor: default; }
+button.primary { background: #ff7a29; border-color: #ff7a29; color: #1a0d03; font-weight: 600; }
+button.primary:hover { background: #ff8c45; }
+
+.readout {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 10px;
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 11.5px;
+  color: #7f92a9;
+}

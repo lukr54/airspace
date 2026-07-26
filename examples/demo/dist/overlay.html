@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>overlay</title>
+    <style>
+      /* The window is transparent, so don't give the page a background or
+         you lose the transparency. */
+      html, body {
+        margin: 0;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+        font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+        color: #eaf1fb;
+        user-select: none;
+      }
+      #hud {
+        display: none;
+        margin: 8px;
+        padding: 14px 16px;
+        border-radius: 10px;
+        background: rgba(8, 11, 16, 0.82);
+        border: 1px solid rgba(255, 122, 41, 0.55);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      }
+      #hud.on { display: block; }
+      .k { color: #ff7a29; letter-spacing: 0.12em; font-size: 10px; text-transform: uppercase; }
+      .v { font-size: 15px; margin-top: 4px; }
+      .m { color: #93a6bd; font-size: 11.5px; margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div id="hud">
+      <div class="k">click-through overlay</div>
+      <div class="v">A separate top-level window.</div>
+      <div class="m">
+        Transparent, always-on-top, and ignoring every mouse event, so try
+        clicking straight through it. This is how you draw over native content
+        you don't own.
+      </div>
+    </div>
+    <script>
+      // Works because "hud" is in the capability's `windows` list. Leave it
+      // out and listen() is denied while invoke() still works, which is what
+      // "emit doesn't reach my second window" usually turns out to be.
+      const { listen } = window.__TAURI__.event;
+      listen("hud-toggle", (e) => {
+        document.getElementById("hud").classList.toggle("on", !!e.payload);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>airspace demo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Everything in .page sits behind the native host once it starts. Whatever
+         is still visible here shows through the holes: "hidden behind the
+         video" is not a thing. -->
+    <main class="page">
+      <h1>airspace</h1>
+      <p class="lede">
+        This page is a WebView2. In a moment an opaque native child window will
+        cover it completely. The only reason you will still see anything is that
+        holes get cut out of that window with <code>SetWindowRgn</code>.
+      </p>
+      <div class="grid" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </main>
+
+    <!-- Overlays. Each one is a separately managed hole. -->
+    <div id="title" class="overlay title off">
+      <span class="dot"></span> Native content is running, and this title is HTML
+    </div>
+
+    <button id="skip" class="overlay skip off">Skip intro →</button>
+
+    <div id="bar" class="overlay bar">
+      <div class="controls">
+        <button id="toggle-native" class="primary">Start native content</button>
+        <button id="toggle-title" disabled>Title</button>
+        <button id="toggle-skip" disabled>Skip button</button>
+        <button id="toggle-bar" disabled>Hide this bar (3s)</button>
+        <button id="toggle-hud">Overlay window</button>
+      </div>
+      <div class="readout"><span id="status">native content stopped</span><span id="holes"></span></div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>
