@@ -1,5 +1,7 @@
 # airspace
 
+[![CI](https://github.com/lukr54/airspace/actions/workflows/ci.yml/badge.svg)](https://github.com/lukr54/airspace/actions/workflows/ci.yml)
+
 Render native content under or alongside HTML in a Tauri v2 window on Windows.
 
 ![The demo: full-size native content with three HTML overlays punched through it](docs/demo.png)

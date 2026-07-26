@@ -26,6 +26,23 @@ impl Hole {
     }
 }
 
+/// Clamp a hole to a client rect of `right` x `bottom`, as left/top/right/bottom.
+///
+/// `None` means there's nothing left to cut: the hole is empty, inverted, or
+/// entirely outside the client area. Callers skip those rather than handing
+/// Windows a degenerate rectangle.
+pub(crate) fn clamp(h: &Hole, right: i32, bottom: i32) -> Option<(i32, i32, i32, i32)> {
+    let l = h.x.max(0);
+    let t = h.y.max(0);
+    let r = h.x.saturating_add(h.w).min(right);
+    let b = h.y.saturating_add(h.h).min(bottom);
+    if r > l && b > t {
+        Some((l, t, r, b))
+    } else {
+        None
+    }
+}
+
 /// A live native host: the child window handle plus the holes currently cut in it.
 #[derive(Debug, Clone)]
 pub(crate) struct Host {
@@ -168,9 +185,7 @@ pub(crate) mod imp {
 
             let region = CreateRectRgn(0, 0, right, bottom);
             for h in holes {
-                let (l, t) = (h.x.max(0), h.y.max(0));
-                let (r, b) = ((h.x + h.w).min(right), (h.y + h.h).min(bottom));
-                if r > l && b > t {
+                if let Some((l, t, r, b)) = super::clamp(h, right, bottom) {
                     let hole = CreateRectRgn(l, t, r, b);
                     CombineRgn(region, region, hole, RGN_DIFF);
                     DeleteObject(hole as _);
@@ -209,5 +224,153 @@ pub(crate) mod imp {
     pub fn destroy(_child: isize) {}
     pub fn alive(_hwnd: isize) -> bool {
         false
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{clamp, Hole};
+
+    const W: i32 = 1100;
+    const H: i32 = 720;
+
+    #[test]
+    fn hole_fully_inside_is_unchanged() {
+        assert_eq!(
+            clamp(&Hole::new(200, 120, 400, 160), W, H),
+            Some((200, 120, 600, 280))
+        );
+    }
+
+    #[test]
+    fn negative_origin_is_clamped_to_the_client() {
+        assert_eq!(
+            clamp(&Hole::new(-50, -20, 100, 60), W, H),
+            Some((0, 0, 50, 40))
+        );
+    }
+
+    #[test]
+    fn overflow_is_clamped_to_the_client() {
+        assert_eq!(
+            clamp(&Hole::new(1000, 700, 400, 400), W, H),
+            Some((1000, 700, W, H))
+        );
+    }
+
+    #[test]
+    fn hole_covering_everything_is_the_whole_client() {
+        assert_eq!(
+            clamp(&Hole::new(0, 0, 9999, 9999), W, H),
+            Some((0, 0, W, H))
+        );
+    }
+
+    #[test]
+    fn holes_with_nothing_left_to_cut_are_skipped() {
+        // entirely off each edge
+        assert_eq!(clamp(&Hole::new(W, 10, 50, 50), W, H), None);
+        assert_eq!(clamp(&Hole::new(10, H, 50, 50), W, H), None);
+        assert_eq!(clamp(&Hole::new(-100, 10, 50, 50), W, H), None);
+        assert_eq!(clamp(&Hole::new(10, -100, 50, 50), W, H), None);
+        // degenerate and inverted
+        assert_eq!(clamp(&Hole::new(10, 10, 0, 50), W, H), None);
+        assert_eq!(clamp(&Hole::new(10, 10, 50, 0), W, H), None);
+        assert_eq!(clamp(&Hole::new(10, 10, -50, -50), W, H), None);
+    }
+
+    #[test]
+    fn absurd_sizes_do_not_overflow() {
+        assert_eq!(
+            clamp(&Hole::new(10, 10, i32::MAX, i32::MAX), W, H),
+            Some((10, 10, W, H))
+        );
+        assert_eq!(clamp(&Hole::new(i32::MAX, i32::MAX, 10, 10), W, H), None);
+    }
+
+    // The worked example from the README, checked against real Windows rather
+    // than asserted in prose: a 1100x720 client with one 400x160 hole at
+    // (200,120) must clip to exactly four rectangles.
+    #[cfg(windows)]
+    #[test]
+    fn region_is_client_rect_minus_hole() {
+        use super::imp;
+        use std::mem::{size_of, zeroed};
+        use windows_sys::Win32::Foundation::RECT;
+        use windows_sys::Win32::Graphics::Gdi::{
+            CreateRectRgn, DeleteObject, GetRegionData, GetWindowRgn, RGNDATA,
+        };
+        use windows_sys::Win32::UI::WindowsAndMessaging::{
+            CreateWindowExW, DestroyWindow, GetClientRect, WS_POPUP,
+        };
+
+        // WS_POPUP with the predefined STATIC class: no frame, so the client
+        // rect is exactly the size we ask for.
+        let class: Vec<u16> = "STATIC\0".encode_utf16().collect();
+        let parent = unsafe {
+            CreateWindowExW(
+                0,
+                class.as_ptr(),
+                core::ptr::null(),
+                WS_POPUP,
+                0,
+                0,
+                W,
+                H,
+                core::ptr::null_mut(),
+                core::ptr::null_mut(),
+                core::ptr::null_mut(),
+                core::ptr::null(),
+            )
+        };
+        assert!(!parent.is_null(), "could not create the test parent window");
+
+        let mut rc: RECT = unsafe { zeroed() };
+        unsafe { GetClientRect(parent, &mut rc) };
+        assert_eq!((rc.right, rc.bottom), (W, H), "unexpected client size");
+
+        let child = imp::create_child(parent as isize).expect("create_child");
+        imp::apply(child, parent as isize, &[Hole::new(200, 120, 400, 160)]);
+
+        // Read the region back the way tools/verify-region.ps1 does.
+        let rgn = unsafe { CreateRectRgn(0, 0, 1, 1) };
+        assert_ne!(
+            unsafe { GetWindowRgn(child as *mut core::ffi::c_void, rgn) },
+            0,
+            "no window region was set"
+        );
+        let size = unsafe { GetRegionData(rgn, 0, core::ptr::null_mut()) } as usize;
+        let mut buf = vec![0u8; size];
+        unsafe { GetRegionData(rgn, size as u32, buf.as_mut_ptr() as *mut RGNDATA) };
+
+        let count = u32::from_le_bytes(buf[8..12].try_into().unwrap()) as usize;
+        let header = size_of::<windows_sys::Win32::Graphics::Gdi::RGNDATAHEADER>();
+        let mut got: Vec<(i32, i32, i32, i32)> = (0..count)
+            .map(|i| {
+                let o = header + i * 16;
+                let g = |k: usize| i32::from_le_bytes(buf[o + k..o + k + 4].try_into().unwrap());
+                (g(0), g(4), g(8), g(12))
+            })
+            .collect();
+        got.sort();
+
+        let mut want = vec![
+            (0, 0, W, 120),
+            (0, 120, 200, 280),
+            (600, 120, W, 280),
+            (0, 280, W, H),
+        ];
+        want.sort();
+
+        unsafe {
+            DeleteObject(rgn as _);
+            imp::destroy(child);
+            DestroyWindow(parent);
+        }
+
+        assert_eq!(
+            got, want,
+            "region rectangles did not match client minus hole"
+        );
     }
 }

@@ -345,7 +345,12 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
                 // The host is sized to the parent's client rect, so it has to be
                 // re-fitted on every resize. Holes anchored to a window edge are
                 // the frontend's problem: re-push them after a resize.
-                WindowEvent::Resized(_) => {
+                // Dragging the window to a monitor with a different DPI changes
+                // the client size in physical pixels, so the host has to be
+                // re-fitted. Your holes are in physical pixels too, so the
+                // frontend needs to re-measure and re-push them: listen for
+                // Tauri's scale-change event, or watch devicePixelRatio.
+                WindowEvent::Resized(_) | WindowEvent::ScaleFactorChanged { .. } => {
                     if let Some(state) = app.try_state::<Airspace<R>>() {
                         state.refit(&label);
                     }
