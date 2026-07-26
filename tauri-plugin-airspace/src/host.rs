@@ -194,7 +194,11 @@ pub(crate) mod imp {
     }
 }
 
+// `create_child` is unreachable off Windows, since `create_host` returns
+// UnsupportedPlatform before it would be called. Keep the stub anyway so the
+// module has the same shape on every target.
 #[cfg(not(windows))]
+#[allow(dead_code)]
 pub(crate) mod imp {
     use super::Hole;
 

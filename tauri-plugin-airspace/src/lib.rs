@@ -284,6 +284,10 @@ impl<R: Runtime> Airspace<R> {
     ///
     /// Otherwise it dispatches and waits with a timeout, so a caller that has
     /// blocked the event loop some other way gets an error instead of a hang.
+    ///
+    /// Only reachable on Windows: everywhere else `create_host` returns
+    /// `UnsupportedPlatform` before it gets here.
+    #[cfg_attr(not(windows), allow(dead_code))]
     fn on_main<T: Send + 'static>(&self, f: impl FnOnce() -> T + Send + 'static) -> Result<T> {
         if std::thread::current().id() == self.main_thread {
             return Ok(f());
