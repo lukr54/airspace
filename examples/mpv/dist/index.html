@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>airspace mpv example</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="picker">
+      <h1>airspace + mpv</h1>
+      <p>
+        Paste a path to a video file. mpv renders into a native child window that
+        covers this page, and the controls below stay visible because holes get
+        cut out of that window.
+      </p>
+      <div class="row">
+        <input id="path" type="text" spellcheck="false"
+               placeholder="C:\Users\you\Videos\something.mkv" />
+        <button id="play" class="primary">Play</button>
+      </div>
+      <p id="err" class="err"></p>
+      <p class="hint">
+        Needs mpv on PATH, or set <code>MPV</code> to its full path. You can also
+        pass a file as the first argument.
+      </p>
+    </main>
+
+    <div id="title" class="overlay off"><span id="title-text"></span></div>
+
+    <div id="bar" class="overlay off">
+      <div class="controls">
+        <button id="pause">Pause</button>
+        <button id="back">&minus;10s</button>
+        <button id="fwd">+30s</button>
+        <input id="scrub" type="range" min="0" max="1000" value="0" />
+        <span id="time" class="time">0:00 / 0:00</span>
+        <input id="vol" type="range" min="0" max="130" value="100" title="volume" />
+        <button id="stop">Close</button>
+      </div>
+      <div id="holes" class="holes"></div>
+    </div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

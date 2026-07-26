@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["tauri-plugin-airspace", "examples/demo/src-tauri"]
+members = ["tauri-plugin-airspace", "examples/demo/src-tauri", "examples/mpv/src-tauri"]
 
 [workspace.package]
 edition = "2021"

@@ -297,14 +297,39 @@ geometry is right and the pixels are still wrong, look at `WS_CLIPSIBLINGS`.
    native fallback.
 7. Verify with `GetRegionData` and `WindowFromPoint`, not screenshots.
 
-## Demo
+## Examples
 
 ```bash
 cargo run -p airspace-demo
 ```
 
-No external dependencies, the "native content" is a D3D11 swapchain the demo
+No external dependencies. The "native content" is a D3D11 swapchain the demo
 draws itself. Click *Start native content* and toggle the overlays.
+
+```bash
+cargo run -p airspace-mpv -- "C:\path\to\video.mkv"
+```
+
+The real case: mpv playing a file at full size with an HTML control bar over it.
+Needs mpv on `PATH`, or set `MPV` to its full path.
+
+Worth reading if you're wiring up mpv yourself, because three parts of it are
+easy to get wrong:
+
+- **The flags.** `--no-osc --no-osd-bar --input-default-bindings=no
+  --input-vo-keyboard=no` so mpv stops competing with your page for input, and
+  `--d3d11-flip=no` because gpu-next's flip presentation ignores the window
+  region and paints over your holes.
+- **Two IPC connections, not one.** One reads events, one writes commands.
+  Sharing a single handle between a blocking reader and a writer crashes on the
+  first command.
+- **Drain the write connection.** mpv sends command replies to every connected
+  client. Nothing reads that connection, so its pipe buffer fills, mpv blocks
+  writing to it, and then it stops reading your commands. Every control dies
+  while position updates keep arriving, so it looks like a UI bug.
+
+It also has the cursor and key poller the input warning above is about, which is
+what lets the auto-hidden bar come back once there are no holes left.
 
 ## Licence
 

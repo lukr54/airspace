@@ -1,0 +1,109 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0b0d11;
+  color: #e7edf6;
+  font: 15px/1.55 "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+}
+
+#picker { padding: 60px 64px; max-width: 760px; }
+#picker.off { display: none; }
+
+h1 { margin: 0 0 10px; font-size: 40px; letter-spacing: -0.02em; }
+#picker p { color: #93a4bb; margin: 0 0 22px; }
+
+.row { display: flex; gap: 10px; }
+
+input[type="text"] {
+  flex: 1;
+  padding: 11px 13px;
+  border-radius: 8px;
+  border: 1px solid #2c3949;
+  background: #121a24;
+  color: #e7edf6;
+  font: inherit;
+  font-size: 14px;
+}
+input[type="text"]:focus { outline: none; border-color: #ff7a29; }
+
+button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #34445a;
+  background: #182231;
+  color: #dde7f4;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+button:hover { border-color: #4a5f7a; background: #1d2938; }
+button.primary { background: #ff7a29; border-color: #ff7a29; color: #1a0d03; font-weight: 600; }
+button.primary:hover { background: #ff8c45; }
+
+.err { color: #ff8080; min-height: 1.5em; font-size: 13.5px; }
+.hint { color: #6f8298; font-size: 13px; }
+code { background: #182231; padding: 1px 6px; border-radius: 4px; }
+
+/* Overlays. Each is measured and punched out of the mpv host. */
+.overlay { position: fixed; z-index: 10; }
+.overlay.off { display: none; }
+
+#title {
+  top: 20px; left: 50%;
+  transform: translateX(-50%);
+  max-width: 70vw;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: rgba(8, 11, 16, 0.88);
+  border: 1px solid #2b3a4a;
+  font-size: 13.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#bar {
+  left: 20px; right: 20px; bottom: 18px;
+  padding: 12px 16px 10px;
+  border-radius: 12px;
+  background: rgba(8, 11, 16, 0.9);
+  border: 1px solid #26313f;
+}
+
+.controls { display: flex; gap: 10px; align-items: center; }
+
+#scrub { flex: 1; }
+#vol { width: 90px; }
+
+input[type="range"] {
+  -webkit-appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: #33445a;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: #ff7a29;
+}
+
+.time {
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 12px;
+  color: #9db0c6;
+  min-width: 96px;
+  text-align: center;
+}
+
+.holes {
+  margin-top: 8px;
+  font-family: Consolas, ui-monospace, monospace;
+  font-size: 11px;
+  color: #64748b;
+}

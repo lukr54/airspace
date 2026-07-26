@@ -32,6 +32,7 @@ the failure this crate is meant to save you from.
 |---|---|
 | [`tauri-plugin-airspace`](tauri-plugin-airspace/) | the crate, and the full write-up: why transparent webviews over native surfaces can't work, what to do instead, and everything that bites |
 | [`examples/demo`](examples/demo/) | `cargo run -p airspace-demo`, no external dependencies |
+| [`examples/mpv`](examples/mpv/) | the real case: mpv playing a file under an HTML control bar, with the IPC and input-fallback bits worked out |
 | [`tools/verify-region.ps1`](tools/verify-region.ps1) | reads the host's region back so you can check the holes are real |
 
 ## Quick start
@@ -41,6 +42,12 @@ cargo run -p airspace-demo
 ```
 
 Click **Start native content**, then toggle the overlays.
+
+For video specifically, with mpv on `PATH`:
+
+```bash
+cargo run -p airspace-mpv -- "C:\path\to\video.mkv"
+```
 
 To bring the host up without clicking and print the region rectangles Windows is
 clipping to:

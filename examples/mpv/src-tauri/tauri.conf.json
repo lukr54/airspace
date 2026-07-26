@@ -1,0 +1,29 @@
+{
+  "productName": "airspace-mpv",
+  "version": "0.1.0",
+  "identifier": "dev.airspace.mpv",
+  "build": {
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "airspace mpv example",
+        "width": 1180,
+        "height": 720,
+        "minWidth": 640,
+        "minHeight": 400,
+        "backgroundColor": "#0b0d11"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": false,
+    "icon": ["icons/icon.ico"]
+  }
+}

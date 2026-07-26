@@ -1,9 +1,14 @@
 # Checks the hole-punch without relying on a screenshot.
 #
-# Walks the top-level windows of the running demo, finds the airspace host child
+# Walks the top-level windows of a running process, finds the airspace host child
 # window, and reads its window region back with GetRegionData. A host with one
 # hole comes back as several rectangles adding up to client rect minus the hole,
 # which is what Windows will actually clip to.
+#
+#   powershell -File tools/verify-region.ps1
+#   powershell -File tools/verify-region.ps1 -Process airspace-mpv
+
+param([string]$Process = "airspace-demo")
 
 Add-Type @'
 using System;
@@ -76,8 +81,8 @@ public class Rgn {
 }
 '@
 
-$procs = Get-Process airspace-demo -ErrorAction SilentlyContinue
-if (-not $procs) { Write-Output "airspace-demo is not running"; exit 1 }
+$procs = Get-Process $Process -ErrorAction SilentlyContinue
+if (-not $procs) { Write-Output "$Process is not running"; exit 1 }
 foreach ($proc in $procs) {
     Write-Output ("--- pid {0}" -f $proc.Id)
     Write-Output ([Rgn]::Dump([uint32]$proc.Id))
