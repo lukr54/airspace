@@ -90,13 +90,22 @@ impl OverlayBuilder {
 
         let mut builder = WebviewWindowBuilder::new(app, &self.label, self.url)
             .inner_size(self.size.0, self.size.1)
-            .transparent(true)
             .decorations(false)
             .always_on_top(true)
             .skip_taskbar(true)
             .resizable(false)
             .shadow(false)
             .visible(true);
+
+        // Tauri gates `transparent` behind macos-private-api on macOS, so the
+        // method doesn't exist there unless that feature is on. Enable this
+        // crate's `macos-private-api` feature to pass it through. The plugin is
+        // a no-op off Windows regardless, so this only affects whether it
+        // compiles.
+        #[cfg(any(not(target_os = "macos"), feature = "macos-private-api"))]
+        {
+            builder = builder.transparent(true);
+        }
 
         if let Some((x, y)) = self.position {
             builder = builder.position(x, y);

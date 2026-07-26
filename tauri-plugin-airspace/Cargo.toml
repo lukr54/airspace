@@ -12,6 +12,11 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 
+[features]
+# Passes through to tauri's feature of the same name. Only needed if you build
+# for macOS, where tauri gates `WebviewWindowBuilder::transparent` behind it.
+macos-private-api = ["tauri/macos-private-api"]
+
 [package.metadata.docs.rs]
 default-target = "x86_64-pc-windows-msvc"
 targets = ["x86_64-pc-windows-msvc", "x86_64-unknown-linux-gnu"]
