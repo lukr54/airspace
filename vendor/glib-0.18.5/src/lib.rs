@@ -3,6 +3,9 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![allow(clippy::missing_safety_doc)]
 #![allow(renamed_and_removed_lints)]
+// Vendored copy: as a path dependency it no longer gets cargo's --cap-lints, so
+// the workspace's RUSTFLAGS="-D warnings" would fail it on lints newer than 0.18.5.
+#![allow(warnings)]
 #![doc = include_str!("../README.md")]
 
 pub use bitflags;

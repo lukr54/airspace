@@ -1,6 +1,6 @@
 # glib 0.18.5, patched
 
-This is the crates.io release of `glib` 0.18.5, unchanged except for one call in
+This is the crates.io release of `glib` 0.18.5, unchanged in behaviour except for one call in
 `src/variant_iter.rs` (`VariantStrIter::impl_get`). The out-argument passed to
 `g_variant_get_child` is now `&mut p` instead of `&p`.
 
@@ -8,6 +8,11 @@ This is the crates.io release of `glib` 0.18.5, unchanged except for one call in
 - Upstream fix: https://github.com/gtk-rs/gtk-rs-core/pull/1343, released in glib 0.20.0.
 - No 0.18.x release carries it. Tauri 2 pins gtk 0.18 on Linux, and gtk 0.18 requires
   glib ^0.18, so moving to 0.20 is not possible from here.
+
+A second, non-functional change in this repo: `src/lib.rs` carries `#![allow(warnings)]`.
+A path dependency is a local package, so cargo stops passing `--cap-lints` for it, and
+the CI's `RUSTFLAGS=-D warnings` then fails the build on 34 lints that newer compilers
+raise against 0.18.5 code (`mismatched_lifetime_syntaxes`, `unused_parens`).
 
 It is wired in through `[patch.crates-io]` in the workspace `Cargo.toml`. Remove the
 patch and this directory once tauri moves to gtk4 / glib >= 0.20.
