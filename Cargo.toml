@@ -7,3 +7,8 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/lukr54/airspace"
 rust-version = "1.77"
+
+# glib 0.18.5 with the RUSTSEC-2024-0429 fix backported; see vendor/glib-0.18.5/PATCHED.md.
+# Tauri 2 pins gtk 0.18 on Linux, so glib cannot move to 0.20 yet.
+[patch.crates-io]
+glib = { path = "vendor/glib-0.18.5" }
